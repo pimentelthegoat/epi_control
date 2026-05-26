@@ -33,6 +33,7 @@ SAGA SENAI/
     schema.sql
 
   package.json
+  vercel.json
   .gitignore
   README.md
 ```
@@ -94,6 +95,8 @@ Adicione as variaveis no ambiente que voce usa no deploy: Production, Preview e/
 Nao precisa configurar `PORT` na Vercel.
 
 O deploy deve usar a raiz do repositorio como Root Directory. Nao configure a Vercel para usar apenas `backend/`, porque ela precisa encontrar tambem `api/` e `public/`.
+
+O `vercel.json` ja define `public` como Output Directory para a pagina inicial abrir em `/`.
 
 Depois faca um novo deploy/redeploy do repositorio. A Vercel vai servir os arquivos da pasta `public/` e as funcoes serverless:
 
