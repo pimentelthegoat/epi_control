@@ -2,23 +2,17 @@
 
 Sistema web para controle de Equipamentos de Protecao Individual (EPI), com dados salvos na nuvem pelo Supabase.
 
-O frontend chama uma API local (`/api/epis`). O `server.js` usa `SUPABASE_SERVICE_ROLE_KEY` no lado do servidor para falar com o Supabase. A chave `service_role` nao e enviada ao navegador.
-
-## Funcionalidades
-
-- Cadastro, edicao e exclusao de EPIs.
-- Controle de CA, categoria, lote, validade, estoque, setor e fornecedor.
-- Indicadores de equipamentos, itens em uso, EPIs a vencer e estoque critico.
-- Alertas de validade.
-- Busca e filtro por status.
-- Tema claro e escuro.
-- Exportacao CSV.
-- Persistencia em nuvem via Supabase.
+O frontend chama uma API local (`/api/epis`). O backend usa `SUPABASE_SERVICE_ROLE_KEY` no lado do servidor para falar com o Supabase. A chave `service_role` nao e enviada ao navegador.
 
 ## Estrutura
 
 ```text
 SAGA SENAI/
+  backend/
+    .env.example
+    package.json
+    server.js
+
   frontend/
     index.html
     script.js
@@ -27,10 +21,7 @@ SAGA SENAI/
   supabase/
     schema.sql
 
-  .env.example
   .gitignore
-  package.json
-  server.js
   README.md
 ```
 
@@ -48,15 +39,15 @@ SAGA SENAI/
 supabase/schema.sql
 ```
 
-## Configurar .env
+## Configurar Backend
 
 Copie o exemplo:
 
 ```powershell
-Copy-Item .env.example .env
+Copy-Item backend\.env.example backend\.env
 ```
 
-Edite o `.env`:
+Edite `backend/.env`:
 
 ```env
 PORT=5500
@@ -67,6 +58,7 @@ SUPABASE_SERVICE_ROLE_KEY=SUA_CHAVE_SERVICE_ROLE
 ## Rodar
 
 ```powershell
+cd backend
 npm start
 ```
 
@@ -78,8 +70,6 @@ http://localhost:5500
 
 ## API Local
 
-O frontend usa estes endpoints locais:
-
 ```http
 GET /api/epis
 POST /api/epis
@@ -87,29 +77,8 @@ PUT /api/epis/:id
 DELETE /api/epis/:id
 ```
 
-O servidor local repassa as operacoes para a REST API do Supabase usando a `service_role`.
-
-## Modelo de Dados
-
-Tabela: `public.epis`
-
-- `id`
-- `name`
-- `ca`
-- `category`
-- `lot`
-- `valid_until`
-- `total_stock`
-- `in_use`
-- `min_stock`
-- `department`
-- `supplier`
-- `notes`
-- `created_at`
-- `updated_at`
-
 ## Seguranca
 
-O arquivo `.env` fica fora do Git e guarda a `service_role`.
+O arquivo `backend/.env` fica fora do Git e guarda a `service_role`.
 
-Nao coloque `SUPABASE_SERVICE_ROLE_KEY` em arquivos do frontend. Ela deve existir apenas no servidor local ou no ambiente de deploy.
+Nao coloque `SUPABASE_SERVICE_ROLE_KEY` em arquivos do frontend. Ela deve existir apenas no backend ou no ambiente de deploy.

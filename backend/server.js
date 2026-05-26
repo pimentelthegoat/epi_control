@@ -4,7 +4,7 @@ const http = require("http");
 const path = require("path");
 
 const ROOT = __dirname;
-const FRONTEND_ROOT = path.join(ROOT, "frontend");
+const FRONTEND_ROOT = path.resolve(ROOT, "..", "frontend");
 const SUPABASE_TABLE = "epis";
 const SUPABASE_SELECT = "id,name,ca,category,lot,valid_until,total_stock,in_use,min_stock,department,supplier,notes";
 
@@ -24,7 +24,7 @@ const server = http.createServer(async (request, response) => {
     await serveFrontend(request, response, url);
   } catch (error) {
     console.error(error);
-    sendJson(response, 500, { error: "Erro interno do servidor." });
+    sendJson(response, 500, { error: error.message || "Erro interno do servidor." });
   }
 });
 
