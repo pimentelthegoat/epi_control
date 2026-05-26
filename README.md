@@ -2,14 +2,17 @@
 
 Sistema web para controle de Equipamentos de Protecao Individual (EPI), com dados salvos na nuvem pelo Supabase.
 
-O frontend chama `/api/epis`. Localmente, quem responde e `backend/server.js`. Na Vercel, quem responde e a funcao serverless `api/epis.js`. Nos dois casos, `SUPABASE_SERVICE_ROLE_KEY` fica apenas no servidor e nao vai para o navegador.
+O frontend chama `/api/epis`. Localmente, quem responde e `backend/server.js`. Na Vercel, quem responde sao as funcoes serverless da pasta `api/`. Nos dois casos, `SUPABASE_SERVICE_ROLE_KEY` fica apenas no servidor e nao vai para o navegador.
 
 ## Estrutura
 
 ```text
 SAGA SENAI/
   api/
+    _episService.js
     epis.js
+    epis/
+      [id].js
 
   backend/
     .env.example
@@ -30,7 +33,6 @@ SAGA SENAI/
     schema.sql
 
   package.json
-  vercel.json
   .gitignore
   README.md
 ```
@@ -41,7 +43,7 @@ SAGA SENAI/
 2. Va em `Project Settings > API`.
 3. Copie:
    - `Project URL`
-   - `service_role key`
+   - `service_role key` ou `secret key`
 4. Abra o `SQL Editor`.
 5. Execute o SQL do arquivo:
 
@@ -60,9 +62,9 @@ Copy-Item backend\.env.example backend\.env
 Edite `backend/.env`:
 
 ```env
-PORT=5500
+PORT=3000
 SUPABASE_URL=https://SEU-PROJETO.supabase.co
-SUPABASE_SERVICE_ROLE_KEY=SUA_CHAVE_SERVICE_ROLE
+SUPABASE_SERVICE_ROLE_KEY=SUA_CHAVE_SERVICE_ROLE_OU_SECRET
 ```
 
 Rode:
@@ -75,7 +77,7 @@ npm start
 Acesse:
 
 ```text
-http://localhost:5500
+http://localhost:3000
 ```
 
 ## Deploy na Vercel
@@ -84,14 +86,16 @@ Na Vercel, configure estas variaveis em `Project Settings > Environment Variable
 
 ```env
 SUPABASE_URL=https://SEU-PROJETO.supabase.co
-SUPABASE_SERVICE_ROLE_KEY=SUA_CHAVE_SERVICE_ROLE
+SUPABASE_SERVICE_ROLE_KEY=SUA_CHAVE_SERVICE_ROLE_OU_SECRET
 ```
 
 Adicione as variaveis no ambiente que voce usa no deploy: Production, Preview e/ou Development.
 
 Nao precisa configurar `PORT` na Vercel.
 
-Depois faca o deploy do repositorio. A Vercel vai servir os arquivos da pasta `public/` e a funcao serverless:
+O deploy deve usar a raiz do repositorio como Root Directory. Nao configure a Vercel para usar apenas `backend/`, porque ela precisa encontrar tambem `api/` e `public/`.
+
+Depois faca um novo deploy/redeploy do repositorio. A Vercel vai servir os arquivos da pasta `public/` e as funcoes serverless:
 
 ```http
 GET /api/epis

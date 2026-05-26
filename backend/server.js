@@ -10,7 +10,7 @@ const SUPABASE_SELECT = "id,name,ca,category,lot,valid_until,total_stock,in_use,
 
 loadEnv();
 
-const PORT = Number(process.env.PORT || 5500);
+const PORT = Number(process.env.PORT || 3000);
 
 const server = http.createServer(async (request, response) => {
   try {
@@ -120,19 +120,30 @@ async function supabaseRequest(pathname, options = {}) {
     ...options,
     headers: {
       apikey: serviceRoleKey,
-      Authorization: `Bearer ${serviceRoleKey}`,
       "Content-Type": "application/json",
       ...(options.headers || {})
     }
   });
   const text = await response.text();
-  const payload = text ? JSON.parse(text) : null;
+  const payload = parseJsonResponse(text);
 
   if (!response.ok) {
     throw new Error(payload?.message || payload?.error || `Erro Supabase ${response.status}`);
   }
 
   return payload;
+}
+
+function parseJsonResponse(text) {
+  if (!text) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(text);
+  } catch {
+    return { message: text.slice(0, 300) };
+  }
 }
 
 async function readJsonBody(request) {

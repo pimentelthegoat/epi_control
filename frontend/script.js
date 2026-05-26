@@ -68,8 +68,8 @@ async function loadItems() {
   } catch (error) {
     console.error(error);
     state.items = [];
-    state.loadError = "Nao foi possivel carregar os EPIs do Supabase.";
-    showToast("Nao foi possivel conectar ao Supabase.");
+    state.loadError = error.message || "Nao foi possivel carregar os EPIs do Supabase.";
+    showToast(state.loadError);
   } finally {
     state.loading = false;
     render();
@@ -85,13 +85,25 @@ async function requestJson(url, options = {}) {
     }
   });
   const text = await response.text();
-  const payload = text ? JSON.parse(text) : null;
+  const payload = parseResponseBody(text);
 
   if (!response.ok) {
-    throw new Error(payload?.error || `Erro HTTP ${response.status}`);
+    throw new Error(payload?.error || payload?.message || `Erro HTTP ${response.status}`);
   }
 
   return payload;
+}
+
+function parseResponseBody(text) {
+  if (!text) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(text);
+  } catch {
+    return { error: text.slice(0, 220) };
+  }
 }
 
 function normalizeItem(item) {
@@ -378,7 +390,7 @@ async function handleSubmit(event) {
     render();
   } catch (error) {
     console.error(error);
-    showToast("Nao foi possivel salvar no Supabase.");
+    showToast(error.message || "Nao foi possivel salvar no Supabase.");
   } finally {
     elements.saveButton.disabled = false;
   }
@@ -489,7 +501,7 @@ async function deleteItem(id) {
     showToast("EPI excluido do Supabase.");
   } catch (error) {
     console.error(error);
-    showToast("Nao foi possivel excluir no Supabase.");
+    showToast(error.message || "Nao foi possivel excluir no Supabase.");
   }
 }
 

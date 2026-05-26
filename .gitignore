@@ -1,4 +1,6 @@
+.env
 backend/.env
+.vercel
 
 *.log
 .DS_Store
