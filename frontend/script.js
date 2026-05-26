@@ -68,8 +68,8 @@ async function loadItems() {
   } catch (error) {
     console.error(error);
     state.items = [];
-    state.loadError = "Nao foi possivel carregar os EPIs do banco.";
-    showToast("Nao foi possivel conectar ao banco.");
+    state.loadError = "Nao foi possivel carregar os EPIs do Supabase.";
+    showToast("Nao foi possivel conectar ao Supabase.");
   } finally {
     state.loading = false;
     render();
@@ -111,16 +111,16 @@ function normalizeItem(item) {
   };
 }
 
-function toApiPayload(item) {
+function toSupabasePayload(item) {
   return {
     name: item.name,
     ca: item.ca,
     category: item.category,
     lot: item.lot,
-    validUntil: item.validUntil,
-    totalStock: item.totalStock,
-    inUse: item.inUse,
-    minStock: item.minStock,
+    valid_until: item.validUntil,
+    total_stock: item.totalStock,
+    in_use: item.inUse,
+    min_stock: item.minStock,
     department: item.department,
     supplier: item.supplier,
     notes: item.notes
@@ -255,9 +255,9 @@ function renderAlerts() {
 
 function renderTable(items) {
   if (state.loading) {
-    elements.inventoryBody.innerHTML = `<tr><td class="table-message" colspan="7">Carregando dados do banco...</td></tr>`;
+    elements.inventoryBody.innerHTML = `<tr><td class="table-message" colspan="7">Carregando dados do Supabase...</td></tr>`;
     elements.emptyState.hidden = true;
-    elements.resultSummary.textContent = "Conectando ao PostgreSQL";
+    elements.resultSummary.textContent = "Conectando ao Supabase";
     return;
   }
 
@@ -357,20 +357,20 @@ async function handleSubmit(event) {
 
   try {
     if (state.editingId) {
-      const updatedItem = await requestJson(`${API_URL}/${encodeURIComponent(state.editingId)}`, {
+      const updatedItems = await requestJson(`${API_URL}/${encodeURIComponent(state.editingId)}`, {
         method: "PUT",
-        body: JSON.stringify(toApiPayload(item))
+        body: JSON.stringify(toSupabasePayload(item))
       });
-      const normalized = normalizeItem(updatedItem);
+      const normalized = normalizeItem(updatedItems[0]);
       state.items = state.items.map((current) => (current.id === state.editingId ? normalized : current));
-      showToast("EPI atualizado no banco.");
+      showToast("EPI atualizado no Supabase.");
     } else {
-      const createdItem = await requestJson(API_URL, {
+      const createdItems = await requestJson(API_URL, {
         method: "POST",
-        body: JSON.stringify(toApiPayload(item))
+        body: JSON.stringify(toSupabasePayload(item))
       });
-      state.items = [normalizeItem(createdItem), ...state.items];
-      showToast("EPI cadastrado no banco.");
+      state.items = [normalizeItem(createdItems[0]), ...state.items];
+      showToast("EPI cadastrado no Supabase.");
     }
 
     resetForm();
@@ -378,7 +378,7 @@ async function handleSubmit(event) {
     render();
   } catch (error) {
     console.error(error);
-    showToast("Nao foi possivel salvar no banco.");
+    showToast("Nao foi possivel salvar no Supabase.");
   } finally {
     elements.saveButton.disabled = false;
   }
@@ -473,7 +473,7 @@ async function deleteItem(id) {
     return;
   }
 
-  const confirmed = window.confirm(`Excluir ${item.name} do banco?`);
+  const confirmed = window.confirm(`Excluir ${item.name} do Supabase?`);
 
   if (!confirmed) {
     return;
@@ -486,10 +486,10 @@ async function deleteItem(id) {
       resetForm();
     }
     render();
-    showToast("EPI excluido do banco.");
+    showToast("EPI excluido do Supabase.");
   } catch (error) {
     console.error(error);
-    showToast("Nao foi possivel excluir no banco.");
+    showToast("Nao foi possivel excluir no Supabase.");
   }
 }
 
