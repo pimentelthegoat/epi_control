@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/epis/:id",
+      "destination": "/api/epis.js"
+    },
+    {
+      "source": "/api/epis",
+      "destination": "/api/epis.js"
+    }
+  ]
+}

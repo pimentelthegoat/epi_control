@@ -4,7 +4,7 @@ const http = require("http");
 const path = require("path");
 
 const ROOT = __dirname;
-const FRONTEND_ROOT = path.resolve(ROOT, "..", "frontend");
+const FRONTEND_ROOT = path.resolve(ROOT, "..", "public");
 const SUPABASE_TABLE = "epis";
 const SUPABASE_SELECT = "id,name,ca,category,lot,valid_until,total_stock,in_use,min_stock,department,supplier,notes";
 
