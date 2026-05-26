@@ -24,6 +24,10 @@ SAGA SENAI/
     script.js
     styles.css
 
+  index.html
+  script.js
+  styles.css
+
   public/
     index.html
     script.js
@@ -94,11 +98,11 @@ Adicione as variaveis no ambiente que voce usa no deploy: Production, Preview e/
 
 Nao precisa configurar `PORT` na Vercel.
 
-O deploy deve usar a raiz do repositorio como Root Directory. Nao configure a Vercel para usar apenas `backend/`, porque ela precisa encontrar tambem `api/` e `public/`.
+O deploy deve usar a raiz do repositorio como Root Directory. Nao configure a Vercel para usar apenas `backend/`, porque ela precisa encontrar tambem `index.html`, `api/` e `public/`.
 
-O `vercel.json` ja define `public` como Output Directory para a pagina inicial abrir em `/`.
+O `vercel.json` aponta `/` para `index.html`. Se a Vercel estiver com Output Directory manual no painel, deixe esse campo vazio.
 
-Depois faca um novo deploy/redeploy do repositorio. A Vercel vai servir os arquivos da pasta `public/` e as funcoes serverless:
+Depois faca um novo deploy/redeploy do repositorio. A Vercel vai servir a pagina inicial e as funcoes serverless:
 
 ```http
 GET /api/epis

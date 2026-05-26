@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Controle de EPI</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <div>
+        <p class="eyebrow">SENAI/SC - Joinville Sul</p>
+        <h1>Controle de EPI</h1>
+      </div>
+      <div class="header-actions">
+        <button class="theme-toggle" type="button" id="themeToggle" aria-label="Alternar tema" aria-pressed="false">
+          <span class="theme-toggle-icon" aria-hidden="true"></span>
+          <span id="themeLabel">Escuro</span>
+        </button>
+        <button class="icon-button" type="button" id="exportButton" title="Exportar dados" aria-label="Exportar dados">
+          <span aria-hidden="true">CSV</span>
+        </button>
+        <button class="primary-button" type="button" id="newButton">Novo EPI</button>
+      </div>
+    </header>
+
+    <main class="app-shell">
+      <section class="metrics-grid" aria-label="Indicadores do controle de EPI">
+        <article class="metric">
+          <span class="metric-label">Equipamentos</span>
+          <strong id="totalItems">0</strong>
+        </article>
+        <article class="metric">
+          <span class="metric-label">Em uso</span>
+          <strong id="inUseItems">0</strong>
+        </article>
+        <article class="metric warning">
+          <span class="metric-label">A vencer</span>
+          <strong id="expiringItems">0</strong>
+        </article>
+        <article class="metric danger">
+          <span class="metric-label">Estoque crítico</span>
+          <strong id="lowStockItems">0</strong>
+        </article>
+      </section>
+
+      <section class="alerts-band" id="alertsBand" aria-live="polite"></section>
+
+      <section class="workspace">
+        <section class="inventory-panel" aria-label="Lista de EPIs">
+          <div class="panel-heading">
+            <div>
+              <h2>Inventário</h2>
+              <p id="resultSummary">0 registros encontrados</p>
+            </div>
+            <div class="filters">
+              <label class="search-field">
+                <span>Buscar</span>
+                <input id="searchInput" type="search" placeholder="Nome, CA, lote ou setor" autocomplete="off" />
+              </label>
+              <label>
+                <span>Status</span>
+                <select id="statusFilter">
+                  <option value="all">Todos</option>
+                  <option value="ok">Em dia</option>
+                  <option value="expiring">A vencer</option>
+                  <option value="expired">Vencido</option>
+                  <option value="low">Estoque crítico</option>
+                </select>
+              </label>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Equipamento</th>
+                  <th>CA</th>
+                  <th>Lote</th>
+                  <th>Validade</th>
+                  <th>Estoque</th>
+                  <th>Status</th>
+                  <th class="actions-column">Ações</th>
+                </tr>
+              </thead>
+              <tbody id="inventoryBody"></tbody>
+            </table>
+            <div class="empty-state" id="emptyState" hidden>
+              <h3>Nenhum EPI encontrado</h3>
+              <p>Ajuste os filtros ou cadastre um novo item para continuar o controle.</p>
+            </div>
+          </div>
+        </section>
+
+      </section>
+    </main>
+
+    <div class="modal-backdrop" id="epiModal" role="dialog" aria-modal="true" aria-labelledby="formTitle" hidden>
+      <section class="modal-card" aria-label="Cadastro de EPI">
+        <div class="modal-heading">
+          <div>
+            <p class="eyebrow modal-eyebrow">Controle de inventário</p>
+            <h2 id="formTitle">Cadastrar EPI</h2>
+            <p id="formSubtitle">Inclua lote, validade e estoque para acompanhamento.</p>
+          </div>
+          <button class="close-button" type="button" id="closeModalButton" aria-label="Fechar modal">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+
+        <form id="epiForm" novalidate>
+          <input type="hidden" id="recordId" />
+
+          <label>
+            <span>Nome do EPI</span>
+            <input id="name" type="text" required placeholder="Ex.: Óculos de segurança" />
+            <small data-error-for="name"></small>
+          </label>
+
+          <div class="form-grid">
+            <label>
+              <span>CA</span>
+              <input id="ca" type="text" required placeholder="Ex.: 12345" />
+              <small data-error-for="ca"></small>
+            </label>
+            <label>
+              <span>Categoria</span>
+              <select id="category" required>
+                <option value="">Selecione</option>
+                <option>Proteção visual</option>
+                <option>Proteção auditiva</option>
+                <option>Proteção respiratória</option>
+                <option>Proteção das mãos</option>
+                <option>Proteção dos pés</option>
+                <option>Proteção corporal</option>
+                <option>Proteção contra queda</option>
+              </select>
+              <small data-error-for="category"></small>
+            </label>
+          </div>
+
+          <div class="form-grid">
+            <label>
+              <span>Lote</span>
+              <input id="lot" type="text" required placeholder="Ex.: L-2025-08" />
+              <small data-error-for="lot"></small>
+            </label>
+            <label>
+              <span>Validade</span>
+              <input id="validUntil" type="date" required />
+              <small data-error-for="validUntil"></small>
+            </label>
+          </div>
+
+          <div class="form-grid three">
+            <label>
+              <span>Estoque total</span>
+              <input id="totalStock" type="number" min="0" step="1" required />
+              <small data-error-for="totalStock"></small>
+            </label>
+            <label>
+              <span>Em uso</span>
+              <input id="inUse" type="number" min="0" step="1" required />
+              <small data-error-for="inUse"></small>
+            </label>
+            <label>
+              <span>Mínimo</span>
+              <input id="minStock" type="number" min="0" step="1" required />
+              <small data-error-for="minStock"></small>
+            </label>
+          </div>
+
+          <div class="form-grid">
+            <label>
+              <span>Setor</span>
+              <input id="department" type="text" required placeholder="Ex.: Mecânica" />
+              <small data-error-for="department"></small>
+            </label>
+            <label>
+              <span>Fornecedor</span>
+              <input id="supplier" type="text" required placeholder="Ex.: Delta Safety" />
+              <small data-error-for="supplier"></small>
+            </label>
+          </div>
+
+          <label>
+            <span>Observações</span>
+            <textarea id="notes" rows="3" placeholder="Informações sobre troca, distribuição ou inspeção"></textarea>
+          </label>
+
+          <div class="form-actions">
+            <button class="secondary-button" type="button" id="cancelButton">Cancelar</button>
+            <button class="primary-button" type="submit" id="saveButton">Salvar EPI</button>
+          </div>
+        </form>
+      </section>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
